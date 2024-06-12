@@ -1,3 +1,4 @@
+# src/main.py
 from typing import Final
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -6,6 +7,7 @@ import os
 import logging
 from utils.event_info import get_event_info
 from utils.registration import register_user, get_user_by_email
+from utils.group_invitation import invite_user_to_group
 
 # Load config
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -37,34 +39,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Error in help_command: {e}")
 
-# Response Handlers
-def handle_responses(text: str) -> str:
-    processed: str = text.lower()
-
-    if 'hello' in processed:
-        return 'Hey there! choose below command to continue\nCommands:\n/start - Get event details\n/register - Register for tickets\n/help - Get help'
-
-    return 'I do not understand what you wrote..'
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message_type: str = update.message.chat.type
-    text: str = update.message.text
-
-    print(f'User({update.message.chat.id}) in {message_type}: "{text}"')
-
-    if message_type == 'group':
-        if BOT_USERNAME in text:
-            new_text: str = text.replace(BOT_USERNAME, '').strip()
-            response: str = handle_responses(new_text)
-        else:
-            return
-    else:
-        response: str = handle_responses(text)
-
-    print('Bot:', response)
-    await update.message.reply_text(response)
-
-# Registration Handler
 async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await update.message.reply_text('Please provide your name, email, and number of tickets (e.g., John Doe, john@example.com, 2)')
@@ -86,36 +60,11 @@ async def process_registration(update: Update, context: ContextTypes.DEFAULT_TYP
                 else:
                     user = register_user(name, email, tickets)
                     await update.message.reply_text(f'Thank you, {name}. Your registration is confirmed. Your ticket ID is: {user["id"]}')
-                    await invite_user_to_group(chat_id, user['id'], context)  # Pass user_id and context
+                    await invite_user_to_group(chat_id, GROUP_INVITE_LINK, context)
             else:
                 await update.message.reply_text('Invalid registration format.')
     except Exception as e:
         logger.error(f"Error in process_registration: {e}")
-
-async def invite_user_to_group(chat_id: int, user_id: int, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        
-        if GROUP_INVITE_LINK:
-             await context.bot.send_message(chat_id, f"Please join the event group using this link: {GROUP_INVITE_LINK}")
-        else:
-            logger.warning(f"No group ID or invite link found")
-    except Exception as e:
-        logger.error(f"Error adding user to group: {e}")
-
-def get_group_id_by_event_id(event_id: str) -> str:
-    """
-    Function to retrieve the group ID based on the event ID.
-    You can implement your own logic here to map event IDs to group IDs.
-    """
-    # Example implementation
-    event_to_group_mapping = {
-        "1002215840819": "group1_id",
-       
-        # Add more mappings as needed
-    }
-
-    # Return the group ID based on the event ID
-    return event_to_group_mapping.get(event_id, "")
 
 # Error Handler
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
