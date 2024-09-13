@@ -80,7 +80,7 @@ CeyLabs-TGBot-EventRSVPBot/
 ├── README.md
 ├── .gitignore
 └── composer.json
-![Untitled design (1)](https://github.com/user-attachments/assets/e75ee25e-61fd-419a-ab06-b4830c9a71fa)
+
 
 ```
 
@@ -91,3 +91,5 @@ CeyLabs-TGBot-EventRSVPBot/
 - `README.md` contains detailed instructions on setting up and running the bot.
 - `.gitignore` specifies files and directories to be ignored by Git.
 - `composer.json` lists dependencies for PHP.
+- ![Untitled design (1)](https://github.com/user-attachments/assets/d93cda2a-b717-4208-bb00-5cc524294048)
+
