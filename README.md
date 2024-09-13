@@ -80,7 +80,10 @@ CeyLabs-TGBot-EventRSVPBot/
 ├── README.md
 ├── .gitignore
 └── composer.json
+![Untitled design (1)](https://github.com/user-attachments/assets/e75ee25e-61fd-419a-ab06-b4830c9a71fa)
+
 ```
+
 
 - `src/` contains the main application code.
 - `utils/` contains utility scripts for handling specific functionalities like event info, ticket requests, group invitations, and database operations.
